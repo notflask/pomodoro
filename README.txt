@@ -3,7 +3,8 @@ pomodoro(1)
 ==========================================
 
 simple linux cli which counts time in seconds for pomodoro studying method.
-avaliable commands:
+usage: pomodoro <start|stop|show|reset>
+subcommands description:
   pomodoro show:
     displays current time in format "1h 0m 0s"
   pomodoro start:
