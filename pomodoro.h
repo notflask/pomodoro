@@ -12,7 +12,7 @@
 #define PID_PATH "/tmp/pomodoro.pid"
 #define POMODORO_LENGTH 1500
 
-char *pomodoro_expand_path(const char *path) {
+static char *pomodoro_expand_path(const char *path) {
   if (path[0] == '~') {
     const char *home = getenv("HOME");
     assert(home != NULL && "'HOME' env variable is not defined");
@@ -26,7 +26,7 @@ char *pomodoro_expand_path(const char *path) {
   }
 }
 
-int pomodoro_counter_get() {
+static int pomodoro_counter_get() {
   char *path = pomodoro_expand_path(COUNTER_PATH);
   FILE *file = fopen(path, "r");
 
@@ -45,7 +45,7 @@ int pomodoro_counter_get() {
   return counter;
 }
 
-void pomodoro_counter_set(int value) {
+static void pomodoro_counter_set(int value) {
   char *path = pomodoro_expand_path(COUNTER_PATH);
   FILE *file = fopen(path, "w");
 
@@ -59,7 +59,7 @@ void pomodoro_counter_set(int value) {
   free(path);
 }
 
-char *pomodoro_counter_format() {
+static char *pomodoro_counter_format() {
   char *result = (char *)malloc(20 * sizeof(char));
 
   int seconds = pomodoro_counter_get();
@@ -80,7 +80,7 @@ char *pomodoro_counter_format() {
   return result;
 }
 
-void pomodoro_daemonize() {
+static void pomodoro_daemonize() {
   pid_t pid = fork();
 
   if (pid < 0) {
@@ -107,7 +107,7 @@ void pomodoro_daemonize() {
   dup(fd);
 }
 
-void pomodoro_stop() {
+static void pomodoro_stop() {
   FILE *pid_file;
   int pid = 0;
 
@@ -127,7 +127,7 @@ void pomodoro_stop() {
   }
 }
 
-void pomodoro_loop() {
+static void pomodoro_loop() {
   int counter = pomodoro_counter_get();
 
   while (1) {
@@ -142,7 +142,7 @@ void pomodoro_loop() {
   }
 }
 
-void pomodoro_start() {
+static void pomodoro_start() {
   printf("pomodoro is counting in background (started from %s)... start "
          "working!\n",
          pomodoro_counter_format());
@@ -159,14 +159,14 @@ void pomodoro_start() {
   pomodoro_loop();
 }
 
-void pomodoro_show() {
+static void pomodoro_show() {
   if (pomodoro_counter_get() == 0)
     return;
 
   printf("%s\n", pomodoro_counter_format());
 }
 
-void pomodoro_reset() {
+static void pomodoro_reset() {
   pomodoro_stop();
   pomodoro_counter_set(0);
   printf("counter value has been reseted to zero\n");
